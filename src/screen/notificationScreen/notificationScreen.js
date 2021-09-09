@@ -61,7 +61,7 @@ const notificationScreen = (props) => {
             <Swipeable renderLeftActions={() => LeftActions(item)} onSwipeableLeftOpen={() => swipeToDeleteNotification(item)}>
                 <View style={STYLE.styles.notificationview}>
                     <View style={{ alignItems: 'flex-end', justifyContent: 'flex-end', marginTop: 5 }}>
-                        <Text style={{ fontSize: 12, marginRight: 20, color: '#999999' }}>{moment(item.createdAt).format('LL') == moment().format('LL') ? 'Just Now' : moment(item.createdAt).format('LL')}</Text>
+                        <Text style={{ fontSize: 12, marginRight: 20, color: '#999999' }}>{moment(item.createdAt).format('LL') == moment().format('LL') ? moment(item.createdAt).format('LT') : moment(item.createdAt).format('LLL')}</Text>
                     </View>
                     <View style={{ flexDirection: 'row', flex: 1, marginTop: -30, marginLeft: 15, alignItems: 'center' }}>
                         <View style={{ width: 40, height: 40, backgroundColor: '#EEEEEE', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>

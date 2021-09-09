@@ -48,6 +48,7 @@ function myEaringScreen(props) {
   const getWalletBalanceHistory = async (id) => {
     try {
       const response = await WalletHistory(id);
+      console.log(`response.data`, response.data);
       if (response.data != null && response.data.length != 0 && response.data != 'undefind' && response.status == 200) {
         setWalletList(response.data);
         setloading(false);
@@ -122,7 +123,8 @@ function myEaringScreen(props) {
               <Text style={{ fontSize: 12, color: '#999999', marginRight: 20 }}>{item.property.bankname}</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 20, alignItems: 'center' }}>
-              <Image source={require('../../assets/images/image1.png')} style={{ height: 45, width: 45, borderRadius: 100 }} />
+              <FontAwesome name='rupee' size={30} color='#04DE71' />
+              {/* <Image source={require('../../assets/images/image1.png')} style={{ height: 45, width: 45, borderRadius: 100 }} /> */}
               <View>
                 <Text style={{ fontSize: 14, color: '#000000', marginLeft: 15 }}>{item.property.bankname}</Text>
                 <Text style={{ fontSize: 12, color: '#999999', marginLeft: 15 }}>{item.property.date && moment(item.property.date).format('DD/MM/YYYY') + ', ' + moment(item.property.date).format('LT')}</Text>

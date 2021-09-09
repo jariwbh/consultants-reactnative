@@ -40,6 +40,7 @@ const myProfileScreen = (props) => {
     useFocusEffect(
         React.useCallback(() => {
             getUserData();
+            getNotification(userId);
         }, [])
     );
 

@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
         marginLeft: 80
     },
     boxView: {
-        height: 250,
+        height: 270,
         width: WIDTH - 20,
         shadowOpacity: 0.5,
         shadowRadius: 1,

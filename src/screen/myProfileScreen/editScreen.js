@@ -229,7 +229,7 @@ const editScreen = (props) => {
                 firebase.crashlytics().recordError(response);
                 //console.log('User tapped custom button: ', response.customButton);
             } else {
-                firebase.crashlytics().recordError(response);
+                //firebase.crashlytics().recordError(response);
                 setloading(true);
                 onPressUploadFile(field, response);
             }

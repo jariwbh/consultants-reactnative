@@ -80,7 +80,7 @@ export default class registerScreen extends Component {
             this.setMobile_number(mobile_number);
             return;
         }
-        axiosConfig('606abd8799e17f1678300c12');
+        axiosConfig('5e899bb161eb802d6037c4d7');
         const body = {
             'property': {
                 'fullname': fullname,
@@ -89,6 +89,7 @@ export default class registerScreen extends Component {
                 'type': 'consultant'
             }
         }
+
         this.setState({ loading: true });
         try {
             RegisterService(body).then(response => {
@@ -118,7 +119,7 @@ export default class registerScreen extends Component {
         const { loading, usererror, mobile_numbererror, fullnameerror } = this.state;
         return (
             <SafeAreaView style={STYLES.styles.container}>
-                <GeneralStatusBarColor hidden={false} translucent={true} backgroundColor="transparent" barStyle="dark-content" />
+                <GeneralStatusBarColor hidden={false} translucent={true} backgroundColor="#AAAAAA" barStyle="dark-content" />
                 <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'always'}>
                     <View style={STYLES.styles.circle}>
                         <Image source={require('../../assets/images/icon.png')} style={STYLES.styles.imageView} />
@@ -185,6 +186,9 @@ export default class registerScreen extends Component {
                                         <Text style={STYLES.styles.submitbtnText}>Join Us</Text>
                                     </TouchableOpacity>
                                 </View>
+                                <TouchableOpacity onPress={() => { this.props.navigation.goBack(null), this.resetScreen() }} style={{ marginTop: 5, justifyContent: 'center', alignItems: 'center' }} >
+                                    <Text style={{ color: '#000000', fontSize: 14, textTransform: 'capitalize', fontWeight: 'bold' }}>{`<< Back`}</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <View style={STYLES.styles.centeView} >
@@ -195,11 +199,11 @@ export default class registerScreen extends Component {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 15 }}>
+                        {/* <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 15 }}>
                             <TouchableOpacity style={STYLES.styles.backBtn} onPress={() => { this.props.navigation.navigate(LOGINSCREEN), this.resetScreen() }} >
                                 <Text style={{ color: '#5AC8FA', fontSize: 14 }}>Back</Text>
                             </TouchableOpacity>
-                        </View>
+                        </View> */}
                     </View>
                     <View style={{ marginVertical: 20 }} />
                 </ScrollView>

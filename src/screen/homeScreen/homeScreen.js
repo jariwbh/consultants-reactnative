@@ -90,6 +90,7 @@ const homeScreen = (props) => {
     const [filterSelectValue, setfilterSelectValue] = useState(null);
     const [refreshing, setrefreshing] = useState(false);
     const [notification, setNotification] = useState(0);
+    const [consltid, setconsltid] = useState(null);
     let userID;
 
     useEffect(() => {
@@ -107,11 +108,12 @@ const homeScreen = (props) => {
 
     useEffect(() => {
     }, [selectedItem, userDetails, allCategorytoggle, loading, filterList, filterSelectValue,
-        selectCategory, online, dashboardView, refreshing, dashboardtopEarner, notification]);
+        selectCategory, online, dashboardView, refreshing, dashboardtopEarner, notification, consltid]);
 
     useFocusEffect(
         React.useCallback(() => {
             getDashboardView();
+            getNotification(consltid);
         }, [])
     );
 
@@ -299,7 +301,8 @@ const homeScreen = (props) => {
         } else {
             var UserInfo = JSON.parse(getUser);
             //console.log(`UserInfo`, UserInfo);
-            userID = UserInfo._id
+            userID = UserInfo._id;
+            setconsltid(UserInfo._id);
             PushNotifications();
             await getByIdUser(UserInfo._id);
             await getNotification(UserInfo._id);
@@ -508,7 +511,7 @@ const homeScreen = (props) => {
                             style={{ marginLeft: 10, marginTop: -10, justifyContent: 'center', alignItems: 'center' }}>
                             <Image source={require('../../assets/images/notificationicon.png')} style={{ height: 25, width: 20 }} />
                             <View style={{ marginLeft: 15, marginTop: -40, height: 22, width: 22, borderRadius: 100, justifyContent: 'center', alignItems: 'center', backgroundColor: '#EB5757' }}>
-                                <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#FFFFFF' }}>{0}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#FFFFFF' }}>{notification}</Text>
                             </View>
                         </TouchableOpacity>
                         {online == true ?

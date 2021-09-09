@@ -136,7 +136,8 @@ export default class loginScreen extends Component {
                     "searchfield": "status",
                     "searchvalue": [
                         "active",
-                        "suspend"
+                        "suspend",
+                        "approved"
                     ],
                     "datatype": "array",
                     "criteria": "in"
@@ -147,7 +148,7 @@ export default class loginScreen extends Component {
         try {
             await LoginService(body)
                 .then(response => {
-                    console.log(`response`, response);
+                    //console.log(`response`, response);
                     if (response.data != null && response.data != 'undefind' && response.status == 200) {
                         let token = response.data.user._id;
                         //set header auth user key
@@ -215,7 +216,7 @@ export default class loginScreen extends Component {
         const { loading, showModalVisible, showMessageModalVisible, usererror, passworderror, subject, subjecterror, description, descriptionerror } = this.state;
         return (
             <SafeAreaView style={STYLES.styles.container}>
-                <GeneralStatusBarColor hidden={false} translucent={true} backgroundColor="transparent" barStyle="dark-content" />
+                <GeneralStatusBarColor hidden={false} translucent={true} backgroundColor="#AAAAAA" barStyle="dark-content" />
                 <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'always'}>
                     <View style={STYLES.styles.circle}>
                         <Image source={require('../../assets/images/icon.png')} style={STYLES.styles.imageView} />

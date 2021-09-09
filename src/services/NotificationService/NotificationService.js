@@ -4,7 +4,7 @@ function NotificationService(id) {
     let body =
     {
         "search": [{ "searchfield": "receiver", "searchvalue": id, "datatype": "ObjectId", "criteria": "eq" },
-        { "searchfield": "type", "searchvalue": "PUSHALERT", "datatype": "text", "criteria": "eq" },
+        { "searchfield": "messagetype", "searchvalue": "PUSHALERT", "datatype": "text", "criteria": "eq" },
         { 'searchfield': 'status', 'searchvalue': 'active', 'criteria': 'eq', 'datatype': 'text' }]
     }
     return Axios.post('communicationlogs/filter', body);

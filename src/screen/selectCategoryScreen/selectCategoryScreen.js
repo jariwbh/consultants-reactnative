@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Image, SafeAreaView, TouchableOpacity, ScrollView, FlatList, StatusBar, ToastAndroid } from 'react-native';
+import {
+    View, Text, Image, SafeAreaView, TouchableOpacity,
+    ScrollView, FlatList, StatusBar, ToastAndroid, Dimensions
+} from 'react-native';
 import CategoryService from '../../services/CategoryService/CategoryService';
-import { UserUpdateService } from '../../services/UserService/UserService';
+import { UserReviewService } from '../../services/UserService/UserService';
 import AsyncStorage from '@react-native-community/async-storage';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import * as SCREEN from '../../context/screen/screenName';
@@ -10,6 +13,7 @@ import Loader from '../../components/loader/index';
 import * as STYLE from './styles';
 import GeneralStatusBarColor from '../../components/StatusBarStyle/GeneralStatusBarColor';
 import crashlytics, { firebase } from "@react-native-firebase/crashlytics";
+const WIDTH = Dimensions.get('window').width;
 
 function selectCategoryScreen(props) {
     const [categoryList, setCategoryList] = useState([]);
@@ -38,26 +42,26 @@ function selectCategoryScreen(props) {
         setloading(false);
     }
 
-    async function groupBy(list) {
-        var str1 = 'property';
-        var str2 = 'skillcategory';
-        var finallist = [], list2 = [];
-        var ind;
-        for (let i = 0; i < list.length; i++) {
-            let item = list[i]
-            ind = list2.findIndex(a => a == item[str1][str2]);
-            if (ind != null && ind != undefined) {
-                if (ind == -1) {
-                    finallist[item[str1][str2]] = [];
-                    finallist[item[str1][str2]].push(item);
-                    list2.push(item[str1][str2]);
-                } else {
-                    finallist[item[str1][str2]].push(item);
-                }
-            }
-        }
-        return finallist;
-    }
+    // async function groupBy(list) {
+    //     var str1 = 'property';
+    //     var str2 = 'skillcategory';
+    //     var finallist = [], list2 = [];
+    //     var ind;
+    //     for (let i = 0; i < list.length; i++) {
+    //         let item = list[i]
+    //         ind = list2.findIndex(a => a == item[str1][str2]);
+    //         if (ind != null && ind != undefined) {
+    //             if (ind == -1) {
+    //                 finallist[item[str1][str2]] = [];
+    //                 finallist[item[str1][str2]].push(item);
+    //                 list2.push(item[str1][str2]);
+    //             } else {
+    //                 finallist[item[str1][str2]].push(item);
+    //             }
+    //         }
+    //     }
+    //     return finallist;
+    // }
 
     //first time screen open to call function
     const setselectCategoryDefaultValue = (res) => {
@@ -103,13 +107,13 @@ function selectCategoryScreen(props) {
     //render category 
     const renderCategory = ({ item }) => (
         <View style={{ padding: 10 }}>
-            {item.property.skillcategory == 'COMING SOON' || item.property.skillcategory == 'Coming Soon' ?
+            {item.property.title == 'COMING SOON' || item.property.title == 'Coming Soon' ?
                 <View>
                     <TouchableOpacity disabled={true}>
                         <Image source={{ uri: item.property.image[0].attachment }}
                             style={{ width: 70, height: 70, borderRadius: 10 }} />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 12, textAlign: 'center', textTransform: 'uppercase', marginTop: 5, color: '#8D8D8D' }}>{item.property.skillcategory.substring(0, 6) + ' ...'}</Text>
+                    <Text style={{ fontSize: 12, textAlign: 'center', textTransform: 'capitalize', marginTop: 5, color: '#8D8D8D' }}>{item.property.title.substring(0, 6) + ' ...'}</Text>
                 </View>
                 :
                 <View>
@@ -117,7 +121,7 @@ function selectCategoryScreen(props) {
                         <Image source={{ uri: item.property.image[0].attachment }}
                             style={{ width: 70, height: 70, borderRadius: 10, borderWidth: 0.2, borderColor: '#555555' }} />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 12, textAlign: 'center', textTransform: 'uppercase', marginTop: 5, color: '#000000', width: 70 }}>{item.property.skillcategory}</Text>
+                    <Text style={{ fontSize: 12, textAlign: 'center', textTransform: 'capitalize', marginTop: 5, color: '#000000', width: 70 }}>{item.property.title}</Text>
                 </View>
             }
         </View>
@@ -147,7 +151,7 @@ function selectCategoryScreen(props) {
     const renderSelectCategory = ({ item }) => (
         <View style={{ padding: 5 }}>
             <View style={STYLE.styles.graficview}>
-                <Text style={{ fontSize: 20, marginLeft: 20 }}>{item.item && item.item.property && item.item.property.skillcategory}</Text>
+                <Text style={{ width: WIDTH - 100, fontSize: 20, marginLeft: 20 }}>{item.item && item.item.property && item.item.property.title}</Text>
                 <TouchableOpacity onPress={() => onTouchRemoveCategory({ item })}>
                     <AntDesign name='closecircleo' size={20} color='#000000' style={{ marginRight: 20 }} />
                 </TouchableOpacity>
@@ -162,12 +166,22 @@ function selectCategoryScreen(props) {
             skill.push(element.item._id);
         });
 
-        let user = userDetails;
-        user.property.skill = skill;
+        let body = {
+            contextid: userDetails._id,
+            onModel: 'User',
+            formid: '6051da7ac49da515d8175b20',
+            property: {}
+        }
+        body.property.skill = skill;
         try {
-            UserUpdateService(user).then(response => {
+            UserReviewService(body).then(response => {
                 if (response.data != null && response.data != 'undefind' && response.status == 200) {
-                    authenticateUser(user);
+                    if (Platform.OS === 'android') {
+                        ToastAndroid.show("Thank you your category is been submitted for review", ToastAndroid.SHORT);
+                    } else {
+                        alert('Thank you your category is been submitted for review');
+                    }
+                    //authenticateUser(user);
                     // if (Platform.OS === 'android') {
                     //     ToastAndroid.show("Your Category Update!", ToastAndroid.SHORT);
                     // } else {
@@ -180,7 +194,6 @@ function selectCategoryScreen(props) {
         catch (error) {
             setloading(false);
             firebase.crashlytics().recordError(error);
-
         }
     }
 
