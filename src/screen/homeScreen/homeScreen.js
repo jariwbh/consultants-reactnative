@@ -584,7 +584,7 @@ const homeScreen = (props) => {
                     </View>
                     <View style={STYLES.styles.box4}>
                         <Text style={STYLES.styles.boxuppertext}>Rating</Text>
-                        <Text style={STYLES.styles.boxtext}>{dashboardView?.data[0]?.totalratings ? dashboardView.data[0].totalratings : '--'}</Text>
+                        <Text style={STYLES.styles.boxtext}>{dashboardView?.data[0]?.totalratings ? dashboardView.data[0].totalratings.toFixed(2) : '--'}</Text>
                         <Text style={STYLES.styles.boxtextsecond}>Total Rating</Text>
                     </View>
                 </View>
