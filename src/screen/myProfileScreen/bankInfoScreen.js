@@ -148,18 +148,15 @@ const bankInfoScreen = (props) => {
         ImagePicker.showImagePicker({}, (response) => {
             if (response.didCancel) {
                 setloading(false);
-                firebase.crashlytics().recordError(response);
                 // console.log('User cancelled image picker');
             } else if (response.error) {
                 firebase.crashlytics().recordError(response);
                 setloading(false);
                 // console.log('ImagePicker Error: ', response.error);
             } else if (response.customButton) {
-                firebase.crashlytics().recordError(response);
                 setloading(false);
                 // console.log('User tapped custom button: ', response.customButton);
             } else {
-                firebase.crashlytics().recordError(response);
                 setloading(true);
                 onPressUploadFile(field, response);
             }

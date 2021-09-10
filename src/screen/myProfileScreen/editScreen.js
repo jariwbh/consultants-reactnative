@@ -217,7 +217,6 @@ const editScreen = (props) => {
     const handlePicker = (field) => {
         ImagePicker.showImagePicker({}, (response) => {
             if (response.didCancel) {
-                firebase.crashlytics().recordError(response);
                 setloading(false);
                 //console.log('User cancelled image picker');
             } else if (response.error) {
@@ -226,10 +225,8 @@ const editScreen = (props) => {
                 //console.log('ImagePicker Error: ', response.error);
             } else if (response.customButton) {
                 setloading(false);
-                firebase.crashlytics().recordError(response);
                 //console.log('User tapped custom button: ', response.customButton);
             } else {
-                //firebase.crashlytics().recordError(response);
                 setloading(true);
                 onPressUploadFile(field, response);
             }
