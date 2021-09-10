@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Text, View, SafeAreaView, Dimensions, TouchableOpacity, ScrollView, BackHandler,
-    FlatList, Modal, Switch, Image, Platform, StatusBar, RefreshControl
+    FlatList, Modal, Switch, Image, Platform, StatusBar, RefreshControl, ToastAndroid
 } from 'react-native';
 import { MYPROFILESCREEN, CHATHISTORYSCREEN } from '../../context/screen/screenName';
 import { getCategory } from '../../services/HomeService/HomeService';
@@ -27,6 +27,7 @@ import { NotificationService } from '../../services/NotificationService/Notifica
 import * as SCREEN from '../../context/screen/screenName';
 import GeneralStatusBarColor from '../../components/StatusBarStyle/GeneralStatusBarColor';
 import crashlytics from "@react-native-firebase/crashlytics";
+import CategoryService from '../../services/CategoryService/CategoryService';
 
 const data = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Sat', 'Sun'],
@@ -95,7 +96,6 @@ const homeScreen = (props) => {
 
     useEffect(() => {
         setFilterList(filterListData);
-        getCategoryList();
         getUserData();
         props.navigation.addListener('focus', e => {
             BackHandler.addEventListener('hardwareBackPress', handleBackButton);
@@ -116,6 +116,29 @@ const homeScreen = (props) => {
             getNotification(consltid);
         }, [])
     );
+
+    //get category list api function
+    const getCategoryServiceList = async (userData) => {
+        try {
+            const response = await CategoryService();
+            if (response.data != null && response.status === 200) {
+                let filteredlists = [];
+                response.data.forEach(allcat => {
+                    userData.property.skill.forEach(element => {
+                        if (allcat._id === element) {
+                            allcat.isSelected = false;
+                            filteredlists.push(allcat);
+                        }
+                    });
+                });
+                //console.log(`filteredlists`, filteredlists);
+                setSelectCategory(filteredlists);
+            }
+        } catch (error) {
+            firebase.crashlytics().recordError(error);
+            //console.log(`error`, error);
+        }
+    }
 
     const wait = (timeout) => {
         return new Promise(resolve => {
@@ -297,19 +320,19 @@ const homeScreen = (props) => {
         if (getUser == null) {
             setTimeout(() => {
                 props.navigation.replace(LOGINSCREEN)
-            }, 3000);;
+            }, 3000);
         } else {
             var UserInfo = JSON.parse(getUser);
-            //console.log(`UserInfo`, UserInfo);
             userID = UserInfo._id;
             setconsltid(UserInfo._id);
             PushNotifications();
             await getByIdUser(UserInfo._id);
             await getNotification(UserInfo._id);
+            await getCategoryServiceList(UserInfo);
             setuserDetails(UserInfo);
             setloading(false);
-            //console.log(`UserInfo.property`, UserInfo.property);
-            setOnlineUser(UserInfo.property && UserInfo.property.live === true ? true : false)
+            setOnlineUser(UserInfo?.property?.live === true ? true : false);
+            getCategoryServiceList();
         }
     }
 
@@ -318,9 +341,18 @@ const homeScreen = (props) => {
         try {
             const response = await getByIdUserService(id);
             if (response.data != null && response.data != 'undefind' && response.status == 200) {
-                authenticateUser(response.data);
+                //console.log(`response.data`, response.data);
+                if (response.data.message === 'You do not have permission') {
+                    AsyncStorage.removeItem(AUTHUSER);
+                    props.navigation.navigate(SCREEN.LOGINSCREEN);
+                } else {
+                    authenticateUser(response.data);
+                }
             }
         } catch (error) {
+            AsyncStorage.removeItem(AUTHUSER);
+            props.navigation.navigate(SCREEN.LOGINSCREEN);
+            console.log(`error`, error);
             setloading(false);
             firebase.crashlytics().recordError(error);
         }
@@ -330,7 +362,7 @@ const homeScreen = (props) => {
     const onPressSaveCategory = () => {
         let selCat = [];
         selectedItem.map((item, index) => {
-            selCat.push(item.name);
+            selCat.push(item._id);
         })
         userDetails.property.live = true;
         userDetails.property.livechat = selCat;
@@ -350,29 +382,16 @@ const homeScreen = (props) => {
             let filteredlists = [];
             if (selectedItem) {
                 selectedItem.forEach(element => {
-                    element.name === item.name;
+                    element._id === item._id;
                     item.isSelected = false;
                 });
-                filteredlists = selectedItem.filter(x => x.name !== item.name);
+                filteredlists = selectedItem.filter(x => x._id !== item._id);
             }
             setallCategorytoggle(false);
             setselectedItem(filteredlists);
         } else {
             item.isSelected = true;
             setselectedItem([...selectedItem, item]);
-        }
-    }
-
-    //get category list api function
-    const getCategoryList = async () => {
-        try {
-            const response = await getCategory();
-            if (response.data != null && response.status === 200) {
-                setSelectCategory(response.data.data);
-            }
-        } catch (error) {
-            firebase.crashlytics().recordError(error);
-            //console.log(`error`, error);
         }
     }
 
@@ -445,14 +464,15 @@ const homeScreen = (props) => {
 
     //render select category list in model pop 
     const renderSelectCategory = ({ item }) => (
-        item.name != 'COMING SOON' &&
+        item.property.title.toLowerCase() != 'coming soon' &&
         <View>
             <View style={{ flexDirection: 'row' }}>
                 <View style={{ flex: 1, height: 1, backgroundColor: '#EEEEEE' }}></View>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15 }}>
-                <View style={{ justifyContent: 'flex-start' }}>
-                    <Text style={{ textAlign: 'center', color: '#000000', justifyContent: 'flex-start' }}>{item.name}</Text>
+                <View style={{ justifyContent: 'flex-start', flexDirection: 'column' }}>
+                    <Text style={{ textAlign: 'left', color: '#000000', justifyContent: 'flex-start' }}>{item.property.title}</Text>
+                    <Text style={{ textAlign: 'left', color: '#000000', justifyContent: 'flex-start' }}>{`(${item.property.skillcategory})`}</Text>
                 </View>
                 <View style={{ justifyContent: 'flex-end' }}>
                     <Switch
@@ -494,7 +514,7 @@ const homeScreen = (props) => {
             item.selected = false;
             return item;
         });
-        setfilterSelectValue(item.name)
+        setfilterSelectValue(item._id);
         filteredlists[index].selected = true;
         setFilterList(filteredlists);
     }
@@ -696,7 +716,7 @@ const homeScreen = (props) => {
                                 style={STYLES.styles.savebtn}>
                                 <Text style={{ fontSize: 14, color: '#FFFFFF' }}>Save</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => { setOnlineModalVisible(!onlineModalVisible), setOnlineUser(false), setselectedItem([]), getCategoryList() }}
+                            <TouchableOpacity onPress={() => { setOnlineModalVisible(!onlineModalVisible), setOnlineUser(false), setselectedItem([]) }}
                                 style={STYLES.styles.cancelbtn}>
                                 <Text style={{ fontSize: 14, color: '#000000' }}>Cancel</Text>
                             </TouchableOpacity>

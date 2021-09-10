@@ -132,16 +132,7 @@ export default class loginScreen extends Component {
             password: password,
             "search": [
                 { "searchfield": "role", "searchvalue": "5f6b3b6599e17f1ccc76318c", "datatype": "ObjectId", "criteria": "eq" },
-                {
-                    "searchfield": "status",
-                    "searchvalue": [
-                        "active",
-                        "suspend",
-                        "approved"
-                    ],
-                    "datatype": "array",
-                    "criteria": "in"
-                }
+                { "searchfield": "wfstatus", "searchvalue": "Approved", "datatype": "text", "criteria": "eq" }
             ]
         }
         this.setState({ loading: true });
