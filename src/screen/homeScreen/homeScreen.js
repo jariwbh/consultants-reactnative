@@ -341,7 +341,6 @@ const homeScreen = (props) => {
         try {
             const response = await getByIdUserService(id);
             if (response.data != null && response.data != 'undefind' && response.status == 200) {
-                //console.log(`response.data`, response.data);
                 if (response.data.message === 'You do not have permission') {
                     AsyncStorage.removeItem(AUTHUSER);
                     props.navigation.navigate(SCREEN.LOGINSCREEN);
@@ -349,10 +348,8 @@ const homeScreen = (props) => {
                     authenticateUser(response.data);
                 }
             }
-        } catch (error) {
-            AsyncStorage.removeItem(AUTHUSER);
-            props.navigation.navigate(SCREEN.LOGINSCREEN);
-            console.log(`error`, error);
+        }
+        catch (error) {
             setloading(false);
             firebase.crashlytics().recordError(error);
         }

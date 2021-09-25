@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Text, View, Dimensions, SafeAreaView, Image, TouchableOpacity, ScrollView, Modal,
-    TextInput, ToastAndroid, Platform, Pressable, ActivityIndicator, StatusBar, Keyboard
+    TextInput, ToastAndroid, Platform, Pressable, Alert, Keyboard
 } from 'react-native';
 import HelpSupportService from '../../services/HelpSupportService/HelpSupportService'
 import MenuButton from '../../components/ProfileMenuButton/ProfileMenuButton';
@@ -90,8 +90,13 @@ const myProfileScreen = (props) => {
         try {
             const response = await getByIdUserService(id);
             if (response.data != null && response.data != 'undefind' && response.status == 200) {
-                authenticateUser(response.data);
-                setuserDetails(UserInfo);
+                if (response.data.message === 'You do not have permission') {
+                    AsyncStorage.removeItem(AUTHUSER);
+                    props.navigation.navigate(SCREEN.LOGINSCREEN);
+                } else {
+                    authenticateUser(response.data);
+                    setuserDetails(UserInfo);
+                }
             }
         } catch (error) {
             setloading(false);
@@ -106,17 +111,41 @@ const myProfileScreen = (props) => {
 
     //LogOut Button click to call 
     const onPressLogout = async () => {
-        userDetails.property.livechat = [];
-        userDetails.property.live = false;
-        const response = await UserUpdateService(userDetails);
-        //console.log(`response.data`, response.data);
-        if (response.data != null && response.data != 'undefind' && response.status == 200) {
-            AsyncStorage.removeItem(AUTHUSER);
-            if (Platform.OS === 'android') {
-                ToastAndroid.show('Log Out Success', ToastAndroid.SHORT);
-            }
-            props.navigation.replace(SCREEN.LOGINSCREEN);
-        }
+        Alert.alert(
+            "Logout",
+            "Are you sure you want to logout?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Log out", onPress: async () => {
+                        try {
+                            userDetails.property.livechat = [];
+                            userDetails.property.live = false;
+                            const response = await UserUpdateService(userDetails);
+                            if (response.data != null && response.data != 'undefind' && response.status == 200) {
+                                setloading(false);
+                                AsyncStorage.removeItem(AUTHUSER);
+                                if (Platform.OS === 'android') {
+                                    ToastAndroid.show('Log Out Success', ToastAndroid.SHORT);
+                                }
+                                props.navigation.replace(SCREEN.LOGINSCREEN);
+                            }
+                        } catch (error) {
+                            setloading(false);
+                            if (Platform.OS === 'android') {
+                                ToastAndroid.show('Log Out Problem', ToastAndroid.SHORT);
+                            } else {
+                                alert('Log Out Problem');
+                            }
+                        }
+
+                    }
+                }
+            ]
+        );
     }
 
     //check validation of subject

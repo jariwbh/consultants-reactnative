@@ -260,7 +260,7 @@ export default class loginScreen extends Component {
                                     </TouchableOpacity>
                                 </View>
                                 <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 15 }}>
-                                    <TouchableOpacity style={STYLES.styles.submitBtn} onPress={() => this.onPressSubmit()} >
+                                    <TouchableOpacity style={STYLES.styles.submitBtn} onPress={() => { this.onPressSubmit(), Keyboard.dismiss() }} >
                                         <Text style={STYLES.styles.submitbtnText}>Submit</Text>
                                     </TouchableOpacity>
                                 </View>

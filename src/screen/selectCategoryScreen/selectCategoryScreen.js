@@ -80,7 +80,6 @@ function selectCategoryScreen(props) {
                     });
                 }
             });
-            console.log(`category`, category);
             setselectCategory(category);
         }
     }
@@ -169,7 +168,7 @@ function selectCategoryScreen(props) {
         let body = {
             contextid: userDetails._id,
             onModel: 'User',
-            formid: '6051da7ac49da515d8175b20',
+            formid: '60e818cf2a8852770f9c4e1a',
             property: {}
         }
         body.property.skill = skill;
